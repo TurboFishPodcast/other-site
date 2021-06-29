@@ -134,6 +134,10 @@ img {
   object-fit: contain;
 }
 
+.post:not(:last-of-type) {
+  margin-bottom: 1.5rem;
+}
+
 .post > h3 {
   margin: 0.5rem 0;
 }
