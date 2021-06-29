@@ -104,6 +104,10 @@ main > * {
   grid-column: 2;
 }
 
+main > section:not(:first-child) > h2 {
+  margin-top: 2rem;
+}
+
 footer {
   grid-row: 3;
 
