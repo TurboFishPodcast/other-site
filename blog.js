@@ -1,8 +1,7 @@
 import { ago } from "./ago.js";
 const api = "https://respdev-blog.deno.dev";
-const slug = window.location.hash.substr(1).length > 0
-    ? window.location.hash.substr(1)
-    : undefined;
+const slug = (new URLSearchParams(window.location.search))
+    .get("post");
 // show posts
 if (!slug) {
     document.getElementsByTagName("main")[0].innerHTML += `
@@ -44,7 +43,7 @@ if (!slug) {
                 const slug = post.slug;
                 document.getElementById("posts").innerHTML += `
           <div class="post">
-            <h3><a href="blog.html#${slug}" target="blank">${title}</a></h3>
+            <h3><a href="blog.html?post=${slug}">${title}</a></h3>
             <p><small>${`
               By
                 ${authors.map(({ name, link }) => `${link ? `<a href="${link}">` : ""}${name}${link ? `</a>` : ""}`).join(", ")}
