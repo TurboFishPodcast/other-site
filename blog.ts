@@ -61,7 +61,9 @@ if(!slug) {
 
       if(!page.next) nextPage = null;
 
-      for(const post of page.posts) {
+      for(let i = page.posts.length - 1; i >= 0; i--) {
+        const post = page.posts[i];
+
         const title = post.title;
         const authors = post.authors;
         const date = ago(new Date(post.date));
