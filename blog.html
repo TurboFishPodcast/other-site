@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" crossorigin href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+      #next {
+        background: none;
+        color: #f6f6f6;
+
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+
+        border: none;
+        cursor: pointer;
+      }
+
+      #next:hover {
+        text-decoration: underline;
+      }
+    </style>
+
+    <script defer src="https://unpkg.com/commonmark@0.30.0/dist/commonmark.js"></script>
+    <script defer type="module" src="blog.js"></script>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Responsive - Blog</title>
+
+    <link rel="shortcut icon" href="images/favicon.svg" type="image/x-icon">
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a href="index.html">Home</a>
+        <a class="active" href="blog.html">Blog</a>
+        <a href="https://anchor.fm/responsive">Podcast</a>
+        <a href="https://discord.com/invite/UKQUkhjxRT">Discord</a>
+      </nav>
+
+      <h1 id="title">Blog</h1>
+      <h2 id="desc"></h2>
+      <p><small id="by"></small></p>
+    </header>
+
+    <main>
+    </main>
+
+    <footer>
+      <p><small>Copyright &copy; 2021 <b>Responsive</b></small></p>
+    </footer>
+  </body>
+</html>
