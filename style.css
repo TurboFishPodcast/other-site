@@ -6,7 +6,7 @@ html, body {
   padding: 0;
 }
 
-h1, h2, h3, p, a {
+h1, h2, h3, p, a, li {
   font-family: "Montserrat", sans-serif;
   color: #f6f6f6;
 }
@@ -151,4 +151,8 @@ blockquote {
   padding: 0.1rem 2rem;
 
   border-left: 0.5rem solid #313131;
+}
+
+ol, ul {
+  margin: 0.1rem 2rem;
 }
