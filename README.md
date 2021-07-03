@@ -17,3 +17,8 @@ it, but it just made a few things easier to spot which is always nice.
 Other than that there's nothing, just some good old vanilla JavaScript. As it
 stands there's not much need for reactivity anyways, so it wasn't too big a
 challenge. But who known, maybe we get to have some fun in that regard soon...
+
+## Developing
+
+I use VSCode with the **Live Server** extension and `tsc -w` when developing.
+If needed, I'll setup a proper system, but this works great for now.
