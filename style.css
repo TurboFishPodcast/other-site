@@ -148,11 +148,11 @@ img {
 
 blockquote {
   margin: 0;
-  padding: 0.1rem 2rem;
+  padding: 0.1rem 1rem;
 
   border-left: 0.5rem solid #313131;
 }
 
 ol, ul {
-  margin: 0.1rem 2rem;
+  margin: 0.1rem 1rem;
 }
