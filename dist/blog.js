@@ -1,10 +1,28 @@
 import { ago } from "./ago.js";
-const api = "https://respdev-blog.deno.dev";
-const slug = (new URLSearchParams(window.location.search))
+// export type PostMeta = {
+//   title: string;
+//   description: string;
+//   date: string;
+//   authors: {
+//     name: string;
+//     link?: string;
+//   }[];
+//   draft?: boolean;
+//   slug: string;
+//   content: string;
+// };
+// export type Page = {
+//   posts: PostMeta[],
+//   next?: string;
+//   prev?: string;
+// };
+// const api = "https://respdev-blog.deno.dev";
+const api = "https://responsivedev.github.io/blog/dist";
+const id = (new URLSearchParams(window.location.search))
     .get("post");
 async function run() {
-    // show posts
-    if (!slug) {
+    // show feeds
+    if (!id) {
         document.getElementsByTagName("main")[0].innerHTML += `
       <section>
         <h2>Extra</h2>
@@ -24,31 +42,33 @@ async function run() {
         <div id="posts"></div>
       </section>
     `;
-        let nextPage = 0;
+        let nextFeed = `${api}/feed-0.json`;
         let loadingMore = false;
         async function loadMore() {
-            if (nextPage === null)
+            if (nextFeed === null)
                 return;
             let res;
             loadingMore = true;
             try {
-                res = await fetch(`${api}/page/${nextPage++}`);
-                const page = await res.json();
-                if (!page.next)
-                    nextPage = null;
-                for (let i = page.posts.length - 1; i >= 0; i--) {
-                    const post = page.posts[i];
-                    const title = post.title;
-                    const authors = post.authors;
-                    const date = ago(new Date(post.date));
-                    const description = post.description;
-                    const slug = post.slug;
+                res = await fetch(nextFeed);
+                const feed = await res.json();
+                if (!feed.next_url)
+                    nextFeed = null;
+                else
+                    nextFeed = feed.next_url;
+                for (let i = feed.items.length - 1; i >= 0; i--) {
+                    const item = feed.items[i];
+                    const title = item.title;
+                    const authors = item.authors;
+                    const date = ago(new Date(item.date_published));
+                    const description = item.summary;
+                    const slug = item.id;
                     document.getElementById("posts").innerHTML += `
             <div class="post">
               <h3><a href="blog.html?post=${slug}">${title}</a></h3>
               <p><small>${`
                 By
-                  ${authors.map(({ name, link }) => `${link ? `<a href="${link}">` : ""}${name}${link ? `</a>` : ""}`).join(", ")}
+                  ${(authors ?? feed.authors).map(({ name, url }) => `${url ? `<a href="${url}">` : ""}${name}${url ? `</a>` : ""}`).join(", ")}
                   &bullet;
                   (<i>${date}</i>)
                 `}
@@ -87,26 +107,26 @@ async function run() {
         if (!loadingMore)
             loadMore();
     }
-    // show specific post
+    // show specific item
     else {
         let res;
         try {
-            res = await fetch(`${api}/post/${slug}`);
-            const post = await res.json();
-            const title = post.title;
-            const authors = post.authors;
-            const date = ago(new Date(post.date));
-            const description = post.description;
+            res = await fetch(`${api}/${id}.json`);
+            const item = await res.json();
+            const title = item.title;
+            const authors = item.authors;
+            const date = ago(new Date(item.date_published));
+            const description = item.summary;
             // @ts-expect-error
             const reader = new commonmark.Parser();
             // @ts-expect-error
             const writer = new commonmark.HtmlRenderer();
-            const content = writer.render(reader.parse(post.content));
+            const content = writer.render(reader.parse(item.content_html));
             document.getElementById("title").innerText = title;
             document.getElementById("desc").innerText = description;
             document.getElementById("by").innerHTML = `
         By
-        ${authors.map(({ name, link }) => `${link ? `<a href="${link}">` : ""}${name}${link ? `</a>` : ""}`).join(", ")}
+        ${authors?.map(({ name, url }) => `${url ? `<a href="${url}">` : ""}${name}${url ? `</a>` : ""}`).join(", ")}
         &bullet;
         (<i>${date}</i>)
       `;

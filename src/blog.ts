@@ -1,32 +1,35 @@
 import { ago } from "./ago.js";
+import { JsonFeedInit, JsonFeedItem } from "./types.js";
 
-export type PostMeta = {
-  title: string;
-  description: string;
-  date: string;
-  authors: {
-    name: string;
-    link?: string;
-  }[];
-  draft?: boolean;
-  slug: string;
-  content: string;
-};
+// export type PostMeta = {
+//   title: string;
+//   description: string;
+//   date: string;
+//   authors: {
+//     name: string;
+//     link?: string;
+//   }[];
+//   draft?: boolean;
+//   slug: string;
+//   content: string;
+// };
 
-export type Page = {
-  posts: PostMeta[],
-  next?: string;
-  prev?: string;
-};
+// export type Page = {
+//   posts: PostMeta[],
+//   next?: string;
+//   prev?: string;
+// };
 
-const api = "https://respdev-blog.deno.dev";
+// const api = "https://respdev-blog.deno.dev";
 
-const slug = (new URLSearchParams(window.location.search))
+const api = "https://responsivedev.github.io/blog/dist";
+
+const id = (new URLSearchParams(window.location.search))
   .get("post");
 
 async function run() {
-  // show posts
-  if(!slug) {
+  // show feeds
+  if(!id) {
     document.getElementsByTagName("main")[0].innerHTML += `
       <section>
         <h2>Extra</h2>
@@ -47,40 +50,41 @@ async function run() {
       </section>
     `;
 
-    let nextPage: number | null = 0;
+    let nextFeed: string | null = `${api}/feed-0.json`;
     let loadingMore = false;
 
     async function loadMore() {
-      if(nextPage === null) return;
+      if(nextFeed === null) return;
       let res: Response;
 
       loadingMore = true;
 
       try {
-        res = await fetch(`${api}/page/${nextPage++}`);
-        const page = await res.json() as Page;
+        res = await fetch(nextFeed);
+        const feed = await res.json() as JsonFeedInit;
 
-        if(!page.next) nextPage = null;
+        if(!feed.next_url) nextFeed = null;
+        else nextFeed = feed.next_url;
 
-        for(let i = page.posts.length - 1; i >= 0; i--) {
-          const post = page.posts[i];
+        for(let i = feed.items.length - 1; i >= 0; i--) {
+          const item = feed.items[i];
 
-          const title = post.title;
-          const authors = post.authors;
-          const date = ago(new Date(post.date));
-          const description = post.description;
-          const slug = post.slug;
+          const title = item.title;
+          const authors = item.authors;
+          const date = ago(new Date(item.date_published));
+          const description = item.summary;
+          const slug = item.id;
 
           document.getElementById("posts")!.innerHTML += `
             <div class="post">
               <h3><a href="blog.html?post=${slug}">${title}</a></h3>
               <p><small>${`
                 By
-                  ${authors.map(
-                    ({ name, link }) => `${
-                      link ? `<a href="${link}">` : ""
+                  ${(authors ?? feed.authors!).map(
+                    ({ name, url }) => `${
+                      url ? `<a href="${url}">` : ""
                     }${name}${
-                      link ? `</a>` : ""
+                      url ? `</a>` : ""
                     }`
                   ).join(", ")}
                   &bullet;
@@ -126,35 +130,35 @@ async function run() {
 
     if(!loadingMore) loadMore();
   }
-  // show specific post
+  // show specific item
   else {
     let res: Response;
 
     try {
-      res = await fetch(`${api}/post/${slug}`);
-      const post = await res.json() as PostMeta;
+      res = await fetch(`${api}/${id}.json`);
+      const item = await res.json() as JsonFeedItem;
 
-      const title = post.title;
-      const authors = post.authors;
-      const date = ago(new Date(post.date));
-      const description = post.description;
+      const title = item.title;
+      const authors = item.authors;
+      const date = ago(new Date(item.date_published));
+      const description = item.summary;
       
       // @ts-expect-error
       const reader = new commonmark.Parser();
       // @ts-expect-error
       const writer = new commonmark.HtmlRenderer();
 
-      const content = writer.render(reader.parse(post.content));
+      const content = writer.render(reader.parse(item.content_html));
 
       document.getElementById("title")!.innerText = title;
       document.getElementById("desc")!.innerText = description;
       document.getElementById("by")!.innerHTML = `
         By
-        ${authors.map(
-          ({ name, link }) => `${
-            link ? `<a href="${link}">` : ""
+        ${authors?.map(
+          ({ name, url }) => `${
+            url ? `<a href="${url}">` : ""
           }${name}${
-            link ? `</a>` : ""
+            url ? `</a>` : ""
           }`
         ).join(", ")}
         &bullet;
